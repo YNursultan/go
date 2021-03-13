@@ -4,8 +4,8 @@ import (
 	"context"
 	servicepb "final_project/user_service/api"
 	"fmt"
-	"log"
 	"google.golang.org/grpc"
+	"log"
 )
 
 func main() {
@@ -27,15 +27,15 @@ func createUser(c servicepb.UserServiceClient) {
 	request := &servicepb.CreateUserRequest{User: &servicepb.User{
 		Name:  "Azamat",
 		Login: "aza123",
-		Pass: "123",
+		Pass:  "123",
 		Phone: "87005488851",
 	}}
 
 	response, err := c.CreateUser(ctx, request)
 	if err != nil {
-		log.Fatalf("error while calling User service RPC %v", err)
+		log.Fatalf("error while calling User server RPC %v", err)
 	}
-	log.Printf("response from User service:%v", response.Status)
+	log.Printf("response from User server:%v", response.Status)
 }
 
 func getUser(c servicepb.UserServiceClient) {
@@ -45,9 +45,9 @@ func getUser(c servicepb.UserServiceClient) {
 
 	response, err := c.GetUser(ctx, request)
 	if err != nil {
-		log.Fatalf("error while calling User service RPC %v", err)
+		log.Fatalf("error while calling User server RPC %v", err)
 	}
-	log.Printf("response from User service:%v", response.User.Login)
+	log.Printf("response from User server:%v", response.User.Login)
 }
 
 func deleteUser(c servicepb.UserServiceClient) {
@@ -57,9 +57,9 @@ func deleteUser(c servicepb.UserServiceClient) {
 
 	response, err := c.DeleteUser(ctx, request)
 	if err != nil {
-		log.Fatalf("error while calling User service RPC %v", err)
+		log.Fatalf("error while calling User server RPC %v", err)
 	}
-	log.Printf("response from User service:%v", response.Status)
+	log.Printf("response from User server:%v", response.Status)
 }
 
 func updateUser(c servicepb.UserServiceClient) {
@@ -69,7 +69,7 @@ func updateUser(c servicepb.UserServiceClient) {
 
 	response, err := c.UpdateUser(ctx, request)
 	if err != nil {
-		log.Fatalf("error while calling User service RPC %v", err)
+		log.Fatalf("error while calling User server RPC %v", err)
 	}
-	log.Printf("response from User service:%v", response.Status)
+	log.Printf("response from User server:%v", response.Status)
 }
