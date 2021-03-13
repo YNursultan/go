@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package greet;
+
+option go_package="user_service/api;servicepb";
+
+message User {
+  int64 id = 1;
+  string name = 2;
+  string login = 3;
+  string pass = 4;
+  string phone = 5;
+}
+
+message CreateUserRequest{
+  User user = 1;
+}
+
+message CreateUserResponse{
+  string status = 1;
+}
+
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns(CreateUserResponse) {};
+}
+
