@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
 )
 
 //Server with embedded UnimplementedGreetServiceServer
@@ -33,10 +34,88 @@ func (s *Server) CreateUser(ctx context.Context, req *servicepb.CreateUserReques
 	}
 	defer conn.Close(context.Background())
 	conn.Exec(context.Background(), "insert into users(name, login, pass, phone) values($1, $2, $3, $4)", name, login, pass, phone)
-	status = "Created user with login: "+login
+	status = "Created user with login: " + login
 
 	res := &servicepb.CreateUserResponse{
 		Status: status,
+	}
+
+	return res, nil
+}
+
+func (s *Server) UpdateUser(ctx context.Context, req *servicepb.UpdateUserRequest) (*servicepb.UpdateUserResponse, error) {
+	fmt.Printf("Update user function was invoked with %v \n", req)
+	id := req.GetUser().GetId()
+	name := req.GetUser().GetName()
+	login := req.GetUser().GetLogin()
+	pass := req.GetUser().GetPass()
+	phone := req.GetUser().GetPhone()
+
+	status := ""
+
+	//UPDATE USER FUNC
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+	conn.Exec(context.Background(), "update users set name=$1, login=$2, pass=$3, phone=$4 where id = $5", name, login, pass, phone, id)
+	status = "Updated user with login: " + login
+
+	res := &servicepb.UpdateUserResponse{
+		Status: status,
+	}
+
+	return res, nil
+}
+
+func (s *Server) DeleteUser(ctx context.Context, req *servicepb.DeleteUserRequest) (*servicepb.DeleteUserResponse, error) {
+	fmt.Printf("Delete user function was invoked with %v \n", req)
+	id := req.UserId
+	status := ""
+
+	//DELETED USER FUNC
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+	conn.Exec(context.Background(), "delete from users where id = $1", id)
+	status = "Deleted user with id: " + strconv.Itoa(int(id))
+
+	res := &servicepb.DeleteUserResponse{
+		Status: status,
+	}
+
+	return res, nil
+}
+
+func (s *Server) GetUser(ctx context.Context, req *servicepb.GetUserRequest) (*servicepb.GetUserResponse, error) {
+	fmt.Printf("Get user function was invoked with %v \n", req)
+	id := req.UserId
+	name := ""
+	login := ""
+	pass := ""
+	phone := ""
+
+	//GET USER FUNC
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	err = conn.QueryRow(context.Background(), "select * from users where id = $1", id).Scan(&id, &name, &phone, &login, &pass)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	}
+
+	res := &servicepb.GetUserResponse{
+		User: &servicepb.User{Id: int64(id), Name: name, Phone: phone, Pass: pass, Login: login},
 	}
 
 	return res, nil
