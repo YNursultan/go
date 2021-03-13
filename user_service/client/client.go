@@ -38,3 +38,38 @@ func createUser(c servicepb.UserServiceClient) {
 	log.Printf("response from User service:%v", response.Status)
 }
 
+func getUser(c servicepb.UserServiceClient) {
+	ctx := context.Background()
+
+	request := &servicepb.GetUserRequest{UserId: 3}
+
+	response, err := c.GetUser(ctx, request)
+	if err != nil {
+		log.Fatalf("error while calling User service RPC %v", err)
+	}
+	log.Printf("response from User service:%v", response.User.Login)
+}
+
+func deleteUser(c servicepb.UserServiceClient) {
+	ctx := context.Background()
+
+	request := &servicepb.DeleteUserRequest{UserId: 3}
+
+	response, err := c.DeleteUser(ctx, request)
+	if err != nil {
+		log.Fatalf("error while calling User service RPC %v", err)
+	}
+	log.Printf("response from User service:%v", response.Status)
+}
+
+func updateUser(c servicepb.UserServiceClient) {
+	ctx := context.Background()
+
+	request := &servicepb.UpdateUserRequest{User: &servicepb.User{Login: "SS", Name: "AZA", Pass: "1234", Phone: "123456", Id: 6}}
+
+	response, err := c.UpdateUser(ctx, request)
+	if err != nil {
+		log.Fatalf("error while calling User service RPC %v", err)
+	}
+	log.Printf("response from User service:%v", response.Status)
+}
