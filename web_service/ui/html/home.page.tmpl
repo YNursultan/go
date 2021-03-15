@@ -1,0 +1,23 @@
+{{template "base" .}}
+{{define "title"}}Home{{end}}
+{{define "main"}}
+    <h2>Latest Posts</h2>
+    {{if .Posts}}
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Category</th>
+            </tr>
+            {{range .Posts}}
+                <tr>
+                    <td><a href='/post/{{.ID}}'>{{.Title}}</a></td>
+                    <td>{{humanDate .UserId}}</td>
+                    <td>#{{.ID}}</td>
+                </tr>
+            {{end}}
+        </table>
+    {{else}}
+        <p>There's nothing to see here... yet!</p>
+    {{end}}
+{{end}}

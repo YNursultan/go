@@ -191,13 +191,13 @@ func (s *Server) LoginUser(ctx context.Context, req *servicepb.LoginRequest) (*s
 }
 
 func main() {
-	l, err := net.Listen("tcp", "0.0.0.0:50051")
+	l, err := net.Listen("tcp", "0.0.0.0:50052")
 	if err != nil {
 		log.Fatalf("Failed to listen:%v", err)
 	}
 	s := grpc.NewServer()
 	servicepb.RegisterUserServiceServer(s, &Server{})
-	log.Println("Server is running on port:50051")
+	log.Println("Server is running on port:50052")
 	if err := s.Serve(l); err != nil {
 		log.Fatalf("failed to serve:%v", err)
 	}

@@ -1,0 +1,17 @@
+{{template "base" .}}
+{{define "title"}}Post #{{.Post.ID}}{{end}}
+{{define "main"}}
+    {{with .Post}}
+        <div class='snippet'>
+            <div class='metadata'>
+                <strong>{{.Title}}</strong>
+                <span>#{{.ID}}</span>
+            </div>
+            <pre><code>{{.Description}}</code></pre>
+            <div class='metadata'>
+                <time>Category: {{humanDate .Category}}</time>
+                <time>UserId: {{humanDate .UserId}}</time>
+            </div>
+        </div>
+    {{end}}
+{{end}}
