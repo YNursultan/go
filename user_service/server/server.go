@@ -121,6 +121,75 @@ func (s *Server) GetUser(ctx context.Context, req *servicepb.GetUserRequest) (*s
 	return res, nil
 }
 
+func (s *Server) GetUserByLogin(ctx context.Context, req *servicepb.GetUserByLoginRequest) (*servicepb.GetUserByLoginResponse, error) {
+	fmt.Printf("Get user by login function was invoked with %v \n", req)
+	id := 0
+	name := ""
+	login := req.UserLogin
+	pass := ""
+	phone := ""
+
+	//GET USER BY LOGIN FUNC
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	err = conn.QueryRow(context.Background(), "select * from users where login = $1", login).Scan(&id, &name, &phone, &login, &pass)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	}
+
+	res := &servicepb.GetUserByLoginResponse{
+		User: &servicepb.User{Id: int64(id), Name: name, Phone: phone, Pass: pass, Login: login},
+	}
+
+	return res, nil
+}
+
+func (s *Server) LoginUser(ctx context.Context, req *servicepb.LoginRequest) (*servicepb.LoginResponse, error) {
+	fmt.Printf("Login user function was invoked with %v \n", req)
+	id := 0
+	name := ""
+	login := ""
+	pass := ""
+	phone := ""
+
+	u_login := req.Login
+	u_pass := req.Pass
+
+	//GET USER FUNC
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+
+	err = conn.QueryRow(context.Background(), "select * from users where login = $1", u_login).Scan(&id, &name, &phone, &login, &pass)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	}
+
+	status := ""
+
+	if err == pgx.ErrNoRows {
+		status = "User with this login not registered!"
+		return &servicepb.LoginResponse{Status: status}, nil
+	}
+	if u_pass == pass {
+		status = "OK"
+	} else {
+		status = "Wrong pass!"
+	}
+
+	return &servicepb.LoginResponse{Status: status}, nil
+}
+
 func main() {
 	l, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
