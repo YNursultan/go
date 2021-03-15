@@ -14,7 +14,7 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// PostServiceClient is the client API for PostService server.
+// PostServiceClient is the client API for PostService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PostServiceClient interface {
@@ -22,6 +22,7 @@ type PostServiceClient interface {
 	UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*UpdatePostResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error)
+	GetAllPosts(ctx context.Context, in *GetAllPostsRequest, opts ...grpc.CallOption) (PostService_GetAllPostsClient, error)
 }
 
 type postServiceClient struct {
@@ -68,7 +69,39 @@ func (c *postServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opt
 	return out, nil
 }
 
-// PostServiceServer is the server API for PostService server.
+func (c *postServiceClient) GetAllPosts(ctx context.Context, in *GetAllPostsRequest, opts ...grpc.CallOption) (PostService_GetAllPostsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PostService_ServiceDesc.Streams[0], "/greet.PostService/GetAllPosts", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &postServiceGetAllPostsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type PostService_GetAllPostsClient interface {
+	Recv() (*GetAllPostsResponse, error)
+	grpc.ClientStream
+}
+
+type postServiceGetAllPostsClient struct {
+	grpc.ClientStream
+}
+
+func (x *postServiceGetAllPostsClient) Recv() (*GetAllPostsResponse, error) {
+	m := new(GetAllPostsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
 type PostServiceServer interface {
@@ -76,6 +109,7 @@ type PostServiceServer interface {
 	UpdatePost(context.Context, *UpdatePostRequest) (*UpdatePostResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error)
+	GetAllPosts(*GetAllPostsRequest, PostService_GetAllPostsServer) error
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -95,9 +129,12 @@ func (UnimplementedPostServiceServer) DeletePost(context.Context, *DeletePostReq
 func (UnimplementedPostServiceServer) GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPost not implemented")
 }
+func (UnimplementedPostServiceServer) GetAllPosts(*GetAllPostsRequest, PostService_GetAllPostsServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAllPosts not implemented")
+}
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
-// UnsafePostServiceServer may be embedded to opt out of forward compatibility for this server.
+// UnsafePostServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to PostServiceServer will
 // result in compilation errors.
 type UnsafePostServiceServer interface {
@@ -180,7 +217,28 @@ func _PostService_GetPost_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-// PostService_ServiceDesc is the grpc.ServiceDesc for PostService server.
+func _PostService_GetAllPosts_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetAllPostsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(PostServiceServer).GetAllPosts(m, &postServiceGetAllPostsServer{stream})
+}
+
+type PostService_GetAllPostsServer interface {
+	Send(*GetAllPostsResponse) error
+	grpc.ServerStream
+}
+
+type postServiceGetAllPostsServer struct {
+	grpc.ServerStream
+}
+
+func (x *postServiceGetAllPostsServer) Send(m *GetAllPostsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+// PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PostService_ServiceDesc = grpc.ServiceDesc{
@@ -204,6 +262,12 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetPost_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/server.proto",
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetAllPosts",
+			Handler:       _PostService_GetAllPosts_Handler,
+			ServerStreams: true,
+		},
+	},
+	Metadata: "service.proto",
 }

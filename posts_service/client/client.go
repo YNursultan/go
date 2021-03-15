@@ -5,6 +5,7 @@ import (
 	servicepb "final_project/posts_service/api"
 	"fmt"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 )
 
@@ -18,10 +19,7 @@ func main() {
 	defer conn.Close()
 
 	c := servicepb.NewPostServiceClient(conn)
-	//createPost(c)
-	getPost(c)
-	updatePost(c)
-	deletePost(c)
+	getAllPosts(c)
 }
 
 func createPost(c servicepb.PostServiceClient) {
@@ -75,4 +73,27 @@ func updatePost(c servicepb.PostServiceClient) {
 		log.Fatalf("error while calling Post server RPC %v", err)
 	}
 	log.Printf("response from Post server:%v", response.Status)
+}
+
+func getAllPosts(c servicepb.PostServiceClient) {
+	ctx := context.Background()
+	req := &servicepb.GetAllPostsRequest{}
+
+	stream, err := c.GetAllPosts(ctx, req)
+	if err != nil {
+		log.Fatalf("error while calling GET ALL POSTS RPC %v", err)
+	}
+	defer stream.CloseSend()
+
+LOOP:
+	for {
+		res, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break LOOP
+			}
+			log.Fatalf("error while reciving from get all posts RPC %v", err)
+		}
+		log.Printf("response from get all posts:%v \n", res.GetPost().Title)
+	}
 }

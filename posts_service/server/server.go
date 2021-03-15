@@ -123,6 +123,40 @@ func (s *Server) GetPost(ctx context.Context, req *servicepb.GetPostRequest) (*s
 	return res, nil
 }
 
+func (s *Server) GetAllPosts(req *servicepb.GetAllPostsRequest, stream servicepb.PostService_GetAllPostsServer) error {
+	fmt.Printf("Get all posts function was invoked with %v \n", req)
+
+	stml := "SELECT * FROM POSTS"
+
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+
+	rows, err := conn.Query(context.Background(), stml)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		s := &servicepb.Post{}
+
+		err = rows.Scan(&s.Id, &s.Title, &s.Description, &s.Category, &s.UserId)
+		if err != nil {
+			fmt.Printf("Error: %s", err)
+		}
+
+		res := &servicepb.GetAllPostsResponse{Post: s}
+		if err := stream.Send(res); err != nil {
+			log.Fatalf("error while sending posts responses: %v", err.Error())
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		fmt.Printf("Error: %s", err)
+		return err
+	}
+	return nil
+}
+
 func main() {
 	l, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
