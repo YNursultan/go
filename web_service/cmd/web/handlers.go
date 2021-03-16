@@ -199,9 +199,6 @@ LOOP:
 		res, err := stream.Recv()
 		if err != nil {
 			if err == io.EOF {
-				app.render(w, r, "home.page.tmpl", &templateData{
-					Posts: posts,
-				})
 				break LOOP
 			}
 			log.Fatalf("error while reciving from get all posts RPC %v", err)
@@ -214,6 +211,9 @@ LOOP:
 			UserId:      res.Post.UserId,
 		}
 		posts = append(posts, s)
+		app.render(w, r, "home.page.tmpl", &templateData{
+			Posts: posts,
+		})
 		log.Printf("response from get all posts:%v \n", res.GetPost().Title)
 	}
 } //

@@ -27,7 +27,7 @@ func (s *Server) CreateUser(ctx context.Context, req *servicepb.CreateUserReques
 	status := ""
 
 	//CREATE USER FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -54,7 +54,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *servicepb.UpdateUserReques
 	status := ""
 
 	//UPDATE USER FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -76,7 +76,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *servicepb.DeleteUserReques
 	status := ""
 
 	//DELETED USER FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -101,7 +101,7 @@ func (s *Server) GetUser(ctx context.Context, req *servicepb.GetUserRequest) (*s
 	phone := ""
 
 	//GET USER FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -130,7 +130,7 @@ func (s *Server) GetUserByLogin(ctx context.Context, req *servicepb.GetUserByLog
 	phone := ""
 
 	//GET USER BY LOGIN FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -162,7 +162,7 @@ func (s *Server) LoginUser(ctx context.Context, req *servicepb.LoginRequest) (*s
 	u_pass := req.Pass
 
 	//GET USER FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

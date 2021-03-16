@@ -27,7 +27,7 @@ func (s *Server) CreatePost(ctx context.Context, req *servicepb.CreatePostReques
 	status := ""
 
 	//CREATE POST FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -55,7 +55,7 @@ func (s *Server) UpdatePost(ctx context.Context, req *servicepb.UpdatePostReques
 	status := ""
 
 	//UPDATE POST FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -78,7 +78,7 @@ func (s *Server) DeletePost(ctx context.Context, req *servicepb.DeletePostReques
 	status := ""
 
 	//DELETED USER FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -103,7 +103,7 @@ func (s *Server) GetPost(ctx context.Context, req *servicepb.GetPostRequest) (*s
 	user_id := 0
 
 	//GET POST FUNC
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -128,7 +128,7 @@ func (s *Server) GetAllPosts(req *servicepb.GetAllPostsRequest, stream servicepb
 
 	stml := "SELECT * FROM POSTS"
 
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:Azamat2341!@localhost:5432/user_service")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:1234@localhost:5432/postgres")
 
 	rows, err := conn.Query(context.Background(), stml)
 	if err != nil {
